@@ -97,11 +97,10 @@ public class TwoFourTree {
 	// global left and right references
 	TwoFourTreeItem leftNode = null;
 	TwoFourTreeItem rightNode = null;
-	
+
 	// global delete reference
 	TwoFourTreeItem delNode = null;
-	
-	
+
 	// 7 helper methods for addValue(): splitRoot(), splitLeafRoot(), SplitNode(),
 	// SplitLeafNode(), Evolve2Node(), Evolve3Node(), EvolveLeafNode()
 
@@ -517,212 +516,1037 @@ public class TwoFourTree {
 		return false;
 	} // end has value
 
-	//deletion helper methods----------------
-	
-	// This method fuses 3 2nodes into a singular 4node root, and returns that new root.
+	// deletion helper methods----------------
+
+	// This method fuses 3 2nodes into a singular 4node root, and returns that new
+	// root.
 	TwoFourTreeItem mergeRoot(TwoFourTreeItem oldRoot) {
-		
-		TwoFourTreeItem newRoot = new TwoFourTreeItem(oldRoot.leftChild.value1, oldRoot.value1, oldRoot.rightChild.value1);
-		
-		if(!oldRoot.leftChild.isLeaf) {
+
+		TwoFourTreeItem newRoot = new TwoFourTreeItem(oldRoot.leftChild.value1, oldRoot.value1,
+				oldRoot.rightChild.value1);
+
+		if (!oldRoot.leftChild.isLeaf) {
 			newRoot.isLeaf = false;
 			oldRoot.leftChild.leftChild.parent = newRoot;
 			oldRoot.leftChild.rightChild.parent = newRoot;
 			oldRoot.rightChild.leftChild.parent = newRoot;
 			oldRoot.rightChild.rightChild.parent = newRoot;
-		}//end if
-		
+		} // end if
+
 		newRoot.leftChild = oldRoot.leftChild.leftChild;
 		newRoot.centerLeftChild = oldRoot.leftChild.rightChild;
 		newRoot.centerRightChild = oldRoot.rightChild.leftChild;
 		newRoot.rightChild = oldRoot.rightChild.rightChild;
-		
+
 		return newRoot;
-		
-	}//end fuse root case
-	
-	// this method devolves a 3node and returns the value it is losing. Parameter value is v1 of the current node(cur). 
-	// Parameter node is the node to be devolved. 
-	// Using the value of v1 at cur we can know what kind of devolution it is. 
+
+	}// end fuse root case
+
+	// this method devolves a 3node and returns the value it is losing. Parameter
+	// value is v1 of the current node(cur).
+	// Parameter node is the node to be devolved.
+	// Using the value of v1 at cur we can know what kind of devolution it is.
 	public int devolve3node(TwoFourTreeItem node, int value) {
-		
+
 		node.values -= 1;
 		int temp = 0;
-		
+
 		// if we are losing v1
-		if(value < node.value1) {
+		if (value < node.value1) {
 			temp = node.value1;
 			node.value1 = node.value2;
 			node.value2 = 0;
 			node.leftChild = node.centerChild;
 			node.centerChild = null;
 			return temp;
-		}//end v1 case
-		// we are losing v2
+		} // end v1 case
+			// we are losing v2
 		else {
 			temp = node.value2;
 			node.value2 = 0;
 			node.leftChild = node.centerChild;
 			node.centerChild = null;
 			return temp;
-		}//end v2 case
-		
-	}//end devolve 3node
-	
-	//two assumptions, this isn't a 2node and it has value to delete
+		} // end v2 case
+
+	}// end devolve 3node
+
+	// two assumptions, this isn't a 2node and it has value to delete
 	public void devolveLeafNode(TwoFourTreeItem node, int value) {
-		if(node.isThreeNode()) {
-			if(node.value1 == value) {
+		if (node.isThreeNode()) {
+			if (node.value1 == value) {
 				node.value1 = node.value2;
 				node.value2 = 0;
 				node.values = 1;
-				
-			}// end v1 case
+
+			} // end v1 case
 			else {
 				node.value2 = 0;
 				node.values = 1;
-			}// end v2 case
-		}// end 3node case
+			} // end v2 case
+		} // end 3node case
 		else {
-			if(node.value1 == value) {
+			if (node.value1 == value) {
 				node.value1 = node.value2;
 				node.value2 = node.value3;
 				node.value3 = 0;
 				node.values = 2;
-			}// end v1 case
-			else if(root.value2 == value) {
+			} // end v1 case
+			else if (root.value2 == value) {
 				node.value2 = node.value3;
 				node.value3 = 0;
 				node.values = 2;
-			}// end v2 case
+			} // end v2 case
 			else {
 				node.value3 = 0;
 				node.values = 2;
-			}// end v3 case
-		}// end 4node case
-	}// end devolve leaf node  
-	
+			} // end v3 case
+		} // end 4node case
+	}// end devolve leaf node
+
 	public TwoFourTreeItem devolveLeafRoot(TwoFourTreeItem root, int value) {
-		
-		// there is only 1 value left to delete, we will then remove all references from the old root and set the new root to null
-		if(root.isTwoNode()) {
+
+		// there is only 1 value left to delete, we will then remove all references from
+		// the old root and set the new root to null
+		if (root.isTwoNode()) {
 			delNode = null;
 			return null;
-		}// end 2node case
-		
+		} // end 2node case
+
 		// else we check if it is 3node
-		else if(root.isThreeNode()) {
-			if(root.value1 == value) {
+		else if (root.isThreeNode()) {
+			if (root.value1 == value) {
 				root.value1 = root.value2;
 				root.value2 = 0;
 				root.values = 1;
 				return root;
-			}// end v1 case
+			} // end v1 case
 			else {
 				root.value2 = 0;
 				root.values = 1;
 				return root;
-			}// end v2 case
-		}// end 3node case
-		
+			} // end v2 case
+		} // end 3node case
+
 		// else it's a 4node
 		else {
-			if(root.value1 == value) {
+			if (root.value1 == value) {
 				root.value1 = root.value2;
 				root.value2 = root.value3;
 				root.value3 = 0;
 				root.values = 2;
 				return root;
-			}// end v1 case
-			else if(root.value2 == value) {
+			} // end v1 case
+			else if (root.value2 == value) {
 				root.value2 = root.value3;
 				root.value3 = 0;
 				root.values = 2;
 				return root;
-			}// end v2 case
+			} // end v2 case
 			else {
 				root.value3 = 0;
 				root.values = 2;
 				return root;
-			}// end v3 case
-		}// end 4node case
-	}//end leaf root devolution
+			} // end v3 case
+		} // end 4node case
+	}// end leaf root devolution
+
+	// all merge cases
+
+	// this method merges a 2node with a 3node parent
+	public void merge2NodeFrom3Node(TwoFourTreeItem node) {
+
+		if (node == node.parent.leftChild || node == node.parent.centerChild) {
+			// leaf case no parent pointers need to be reassigned for children of node
+			if (node.isLeaf) {
+
+				node.values = 3;
+				node.value2 = node.parent.value1;
+				node.value3 = node.parent.centerChild.value1;
+				node.centerLeftChild = node.rightChild;
+				node.centerRightChild = node.parent.centerChild.leftChild;
+				node.rightChild = node.parent.centerChild.rightChild;
+				node.parent.value1 = node.parent.value2;
+				node.parent.value2 = 0;
+				node.parent.values = 1;
+				node.parent.centerChild = null;
+			} // end leaf case
+			else {
+
+				node.values = 3;
+				node.value2 = node.parent.value1;
+				node.value3 = node.parent.centerChild.value1;
+				node.centerLeftChild = node.rightChild;
+				node.centerRightChild = node.parent.centerChild.leftChild;
+				node.rightChild = node.parent.centerChild.rightChild;
+				node.parent.centerChild.leftChild.parent = node;
+				node.parent.centerChild.rightChild.parent = node;
+				node.parent.value1 = node.parent.value2;
+				node.parent.value2 = 0;
+				node.parent.values = 1;
+				node.parent.centerChild = null;
+			} // end non leaf case
+		} // end left/center merge case
+		else {
+
+			if (node.isLeaf) {
+
+				node.values = 3;
+				node.value3 = node.value1;
+				node.value2 = node.parent.value2;
+				node.value1 = node.parent.centerChild.value1;
+				node.leftChild = node.parent.centerChild.leftChild;
+				node.centerLeftChild = node.parent.centerChild.rightChild;
+				node.centerRightChild = node.leftChild;
+				node.parent.value2 = 0;
+				node.parent.values = 1;
+				node.parent.centerChild = null;
+			} // end leaf case
+			else {
+
+				node.values = 3;
+				node.value3 = node.value1;
+				node.value2 = node.parent.value2;
+				node.value1 = node.parent.centerChild.value1;
+				node.leftChild = node.parent.centerChild.leftChild;
+				node.centerLeftChild = node.parent.centerChild.rightChild;
+				node.parent.centerChild.leftChild.parent = node;
+				node.parent.centerChild.rightChild.parent = node;
+				node.centerRightChild = node.leftChild;
+				node.parent.value2 = 0;
+				node.parent.values = 1;
+				node.parent.centerChild = null;
+			} // end non leaf case
+		} // end right merge case
+	}// end merge 3node
+
+	// this method merges a 2node with a 4node parent
+	public void merge2NodeFrom4Node(TwoFourTreeItem node) {
+
+		if (node == node.parent.leftChild) {
+
+			if (node.isLeaf) {
+
+				node.values = 3;
+				node.value2 = node.parent.value1;
+				node.value3 = node.parent.centerLeftChild.value1;
+				node.centerLeftChild = node.rightChild;
+				node.centerRightChild = node.parent.centerLeftChild.leftChild;
+				node.rightChild = node.parent.centerLeftChild.rightChild;
+				node.parent.value1 = node.parent.value2;
+				node.parent.value2 = node.parent.value3;
+				node.parent.value3 = 0;
+				node.parent.values = 2;
+				node.parent.centerChild = node.parent.centerRightChild;
+				node.parent.centerLeftChild = null;
+				node.parent.centerRightChild = null;
+			} // end leaf case
+			else {
+
+				node.values = 3;
+				node.value2 = node.parent.value1;
+				node.value3 = node.parent.centerLeftChild.value1;
+				node.centerLeftChild = node.rightChild;
+				node.centerRightChild = node.parent.centerLeftChild.leftChild;
+				node.rightChild = node.parent.centerLeftChild.rightChild;
+				node.parent.centerLeftChild.leftChild.parent = node;
+				node.parent.centerLeftChild.rightChild.parent = node;
+				node.parent.value1 = node.parent.value2;
+				node.parent.value2 = node.parent.value3;
+				node.parent.value3 = 0;
+				node.parent.values = 2;
+				node.parent.centerChild = node.parent.centerRightChild;
+				node.parent.centerLeftChild = null;
+				node.parent.centerRightChild = null;
+			} // end non leaf case
+		} // end left merge case
+		else if (node == node.parent.centerLeftChild || node == node.parent.centerRightChild) {
+
+			if (node.isLeaf) {
+
+				node.values = 3;
+				node.value2 = node.parent.value2;
+				node.value3 = node.parent.centerRightChild.value1;
+				node.centerLeftChild = node.rightChild;
+				node.centerRightChild = node.parent.centerRightChild.leftChild;
+				node.rightChild = node.parent.centerRightChild.rightChild;
+				node.parent.value2 = node.parent.value3;
+				node.parent.value3 = 0;
+				node.parent.values = 2;
+				node.parent.centerChild = node;
+				node.parent.centerLeftChild = null;
+				node.parent.centerRightChild = null;
+			} // end leaf case
+			else {
+
+				node.values = 3;
+				node.value2 = node.parent.value2;
+				node.value3 = node.parent.centerRightChild.value1;
+				node.centerLeftChild = node.rightChild;
+				node.centerRightChild = node.parent.centerRightChild.leftChild;
+				node.rightChild = node.parent.centerRightChild.rightChild;
+				node.parent.centerRightChild.leftChild.parent = node;
+				node.parent.centerRightChild.rightChild.parent = node;
+				node.parent.value2 = node.parent.value3;
+				node.parent.value3 = 0;
+				node.parent.values = 2;
+				node.parent.centerChild = node;
+				node.parent.centerLeftChild = null;
+				node.parent.centerRightChild = null;
+			} // end non leaf case
+		} // end center left/right merge cases
+		else {
+
+			if (node.isLeaf) {
+
+				node.values = 3;
+				node.value3 = node.value1;
+				node.value2 = node.parent.value3;
+				node.value1 = node.parent.centerRightChild.value1;
+				node.centerRightChild = node.leftChild;
+				node.centerLeftChild = node.parent.centerRightChild.rightChild;
+				node.leftChild = node.parent.centerRightChild.leftChild;
+				node.parent.value3 = 0;
+				node.parent.values = 2;
+				node.parent.centerChild = node.parent.centerLeftChild;
+				node.parent.centerLeftChild = null;
+				node.parent.centerRightChild = null;
+			} // end leaf case
+			else {
+
+				node.values = 3;
+				node.value3 = node.value1;
+				node.value2 = node.parent.value3;
+				node.value1 = node.parent.centerRightChild.value1;
+				node.centerRightChild = node.leftChild;
+				node.centerLeftChild = node.parent.centerRightChild.rightChild;
+				node.leftChild = node.parent.centerRightChild.leftChild;
+				node.parent.centerRightChild.rightChild.parent = node;
+				node.parent.centerRightChild.leftChild.parent = node;
+				node.parent.value3 = 0;
+				node.parent.values = 2;
+				node.parent.centerChild = node.parent.centerLeftChild;
+				node.parent.centerLeftChild = null;
+				node.parent.centerRightChild = null;
+			} // end non leaf case
+		} // end right merge case
+	}// 4node merge case
+
+	// all rotation cases
+
+	// this method is responsible for the rotation case when the parent is a two
+	// node and the sibling is a 3node
+	public void rotate2Node3Node(TwoFourTreeItem node) {
+
+		// we are in a left rotate case
+		if (node == node.parent.leftChild) {
+
+			// first the node current is at will grow from a 2node to a 3node
+			node.values = 2;
+			node.value2 = node.parent.value1;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.rightChild.leftChild;
+
+			// now change the value at the parent
+			node.parent.value1 = node.parent.rightChild.value1;
+
+			// now devolve the sibling into a 2node
+			node.parent.rightChild.value1 = node.parent.rightChild.value2;
+			node.parent.rightChild.value2 = 0;
+			node.parent.rightChild.values = 1;
+			node.parent.rightChild.leftChild = node.parent.rightChild.centerChild;
+			node.parent.centerChild = null;
+
+			// if we arent a leaf we will need to updatechildren's parent
+			if (!node.isLeaf) {
+				node.parent.rightChild.leftChild.parent = node;
+			} // end parent update case
+
+		} // end case left
+			// we are at a right rotate case
+		else {
+
+			// first the node current is at will grow from a 2node to a 3node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value1;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.leftChild.rightChild;
+
+			// now change the value at the parent
+			node.parent.value1 = node.parent.leftChild.value2;
+
+			// now devolve the sibling into a 2node
+			node.parent.leftChild.rightChild = node.parent.leftChild.centerChild;
+			node.parent.leftChild.value2 = 0;
+			node.parent.leftChild.values = 1;
+			node.parent.centerChild = null;
+
+			// if we arent a leaf we will need to updatechildren's parent
+			if (!node.isLeaf) {
+				node.parent.leftChild.rightChild.parent = node;
+			} // end parent update case
+
+		} // end case right
+	}// end rotate 2node from 3Node
+
+	// this method rotates a value in to a 2node from a 4node sibling, when the
+	// parent is a 2node
+	public void rotate2Node4Node(TwoFourTreeItem node) {
+
+		// rotating to the left
+		if (node == node.parent.leftChild) {
+
+			// evolve node
+			node.values = 2;
+			node.value2 = node.parent.value1;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.leftChild.leftChild;
+
+			// edit parent value
+			node.parent.value1 = node.parent.rightChild.value1;
+
+			// devolve sibling
+			node.parent.rightChild.values = 2;
+			node.parent.rightChild.value1 = node.parent.rightChild.value2;
+			node.parent.rightChild.value2 = node.parent.rightChild.value3;
+			node.parent.rightChild.value3 = 0;
+			node.parent.rightChild.centerChild = node.parent.rightChild.centerRightChild;
+			node.parent.rightChild.leftChild = node.parent.rightChild.centerLeftChild;
+			node.parent.rightChild.centerLeftChild = null;
+			node.parent.rightChild.centerRightChild = null;
+
+			// node isnt a leaf, thus parents need to be updated.
+			if (!node.isLeaf) {
+				node.parent.leftChild.leftChild.parent = node;
+			} // end leaf case
+
+		} // end rotate left
+			// rotating from the right
+		else {
+
+			// evolve node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value1;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.leftChild.rightChild;
+
+			// update parent value
+			node.parent.value1 = node.parent.leftChild.value3;
+
+			// devolve sibling
+			node.parent.leftChild.values = 2;
+			node.parent.leftChild.value3 = 0;
+			node.parent.leftChild.rightChild = node.parent.leftChild.centerRightChild;
+			node.parent.leftChild.centerChild = node.parent.leftChild.centerLeftChild;
+			node.parent.leftChild.centerLeftChild = null;
+			node.parent.leftChild.centerRightChild = null;
+
+			// node isnt a leaf, thus parents need to be updated.
+			if (!node.isLeaf) {
+				node.parent.leftChild.rightChild.parent = node;
+			} // end leaf case
+		} // end rotate right
+	}// end rotate 2node from 4node
+
+	// this method rotates a value from a 3node to a 2node with a 3node parent
+	public void rotate3Node3node(TwoFourTreeItem node) {
+
+		// left rotate case
+		if (node == node.parent.leftChild) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.parent.value1;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.centerChild.leftChild;
+
+			// update parent value
+			node.parent.value1 = node.parent.centerChild.value1;
+
+			// devolve sibling
+			node.parent.centerChild.values = 1;
+			node.parent.centerChild.value1 = node.centerChild.value2;
+			node.parent.centerChild.value2 = 0;
+			node.parent.leftChild = node.parent.centerChild;
+			node.parent.centerChild = null;
+
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.centerChild.leftChild.parent = node;
+			} // end parent update
+
+		} // end left case
+		else if (node == node.parent.centerChild && node.parent.leftChild.isThreeNode()) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value1;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.leftChild.rightChild;
+
+			// update parent value
+			node.parent.value1 = node.parent.leftChild.value2;
+
+			// devolve sibling
+			node.parent.leftChild.values = 1;
+			node.parent.leftChild.value2 = 0;
+			node.parent.leftChild.rightChild = node.parent.leftChild.centerChild;
+			node.parent.leftChild.centerChild = null;
+
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.leftChild.rightChild.parent = node;
+			} // end parent update
+
+		} // end centerleft case
+		else if (node == node.parent.centerChild && node.parent.rightChild.isThreeNode()) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.parent.value2;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.rightChild.leftChild;
+
+			// update parent value
+			node.parent.value2 = node.parent.rightChild.value1;
+
+			// devolve sibling
+			node.parent.rightChild.values = 1;
+			node.parent.rightChild.value1 = node.parent.rightChild.value2;
+			node.parent.rightChild.value2 = 0;
+			node.parent.rightChild.leftChild = node.parent.rightChild.centerChild;
+			node.parent.rightChild.centerChild = null;
+
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.rightChild.leftChild.parent = node;
+			} // end parent update
+
+		} // end centerRight case
+		else if (node == node.parent.rightChild) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value2;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.centerChild.rightChild;
+
+			// update parent value
+			node.parent.value2 = node.parent.centerChild.value2;
+
+			// devolve sibling
+			node.parent.centerChild.values = 1;
+			node.parent.centerChild.value2 = 0;
+			node.parent.centerChild.rightChild = node.parent.centerChild.centerChild;
+			node.parent.centerChild.centerChild = null;
+
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.centerChild.rightChild.parent = node;
+			} // end parent update
+
+		} // end right case
+	}// end rotate3Node3Node
+
+	public void rotate3node4node(TwoFourTreeItem node) {
+
+		// left rotate case
+		if (node == node.parent.leftChild) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.parent.value1;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.centerChild.leftChild;
+
+			// update parent value
+			node.parent.value1 = node.parent.centerChild.value1;
+			
+			// devolve sibling
+			node.parent.centerChild.values = 2;
+			node.parent.centerChild.value1 = node.parent.centerChild.value2;
+			node.parent.centerChild.value2 = node.parent.centerChild.value3;
+			node.parent.centerChild.centerChild = node.parent.centerChild.centerRightChild;
+			node.parent.centerChild.leftChild = node.parent.centerChild.centerLeftChild;
+			node.parent.centerChild.centerLeftChild = null;
+			node.parent.centerChild.centerRightChild = null;
+			
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.centerChild.leftChild.parent = node;
+			} // end parent update
+
+		} // end left case
+		else if (node == node.parent.centerChild && node.parent.leftChild.isFourNode()) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value1;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.leftChild.rightChild;
+			
+			// update parent value
+			node.parent.value1 = node.parent.leftChild.value3;
+			
+			// devolve sibling
+			node.parent.leftChild.values = 2;
+			node.parent.leftChild.value3 = 0;
+			node.parent.leftChild.centerChild = node.parent.leftChild.centerLeftChild;
+			node.parent.leftChild.rightChild = node.parent.leftChild.centerRightChild;
+			node.parent.leftChild.centerLeftChild = null;
+			node.parent.leftChild.centerRightChild = null;
+			
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.leftChild.rightChild.parent = node;
+			} // end parent update
+
+		} // end centerleft case
+		else if (node == node.parent.centerChild && node.parent.rightChild.isFourNode()) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.parent.value2;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.rightChild.leftChild;
+			
+			// update parent value
+			node.parent.value2 = node.parent.rightChild.value1;
+			
+			// devolve sibling
+			node.parent.rightChild.values = 2;
+			node.parent.rightChild.value1 = node.parent.rightChild.value2;
+			node.parent.rightChild.value2 = node.parent.rightChild.value3;
+			node.parent.rightChild.value3 = 0;
+			node.parent.rightChild.centerChild = node.parent.rightChild.centerRightChild;
+			node.parent.rightChild.leftChild = node.parent.rightChild.centerLeftChild;
+			node.parent.rightChild.centerLeftChild = null;
+			node.parent.rightChild.centerRightChild = null;
+			
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.rightChild.leftChild.parent = node;
+			} // end parent update
+
+		} // end centerRight case
+		else if (node == node.parent.rightChild) {
+
+			// evolve node from 2node to 3node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value2;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.rightChild.rightChild;
+			
+			// update parent value
+			node.parent.value2 = node.parent.centerChild.value3;
+			
+			// devolve sibling
+			node.parent.centerChild.values = 2;
+			node.parent.centerChild.value3 = 0;
+			node.parent.centerChild.centerChild = node.parent.centerChild.centerLeftChild;
+			node.parent.centerChild.rightChild = node.parent.centerChild.centerRightChild;
+			node.parent.centerChild.centerLeftChild = null;
+			node.parent.centerChild.centerRightChild = null;
+		
+			// update children's parent
+			if (!node.isLeaf) {
+				node.parent.rightChild.rightChild.parent = node;
+			} // end parent update
+			
+		} // end right case
+		
+	}// end rotate3node4node
+
+	// this method rotates a value in from a 3node to a 2node with a 4node parent
+	public void rotate4Node3Node(TwoFourTreeItem node) {
+		
+		if(node == node.parent.leftChild) {
+			
+			// evolve node
+			node.values = 2;
+			node.value2 = node.parent.value1;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.centerLeftChild.leftChild;
+			
+			// update parent value
+			node.parent.value1 = node.parent.centerLeftChild.value1;
+			
+			// devlove sibling
+			node.parent.centerLeftChild.values = 1;
+			node.parent.centerLeftChild.value1 = node.parent.centerLeftChild.value2;
+			node.parent.centerLeftChild.value2 = 0;
+			node.parent.centerLeftChild.leftChild = node.parent.centerLeftChild.centerChild;
+			node.parent.centerLeftChild.centerChild = null;
+			
+			// non leafcase
+			if(!node.isLeaf) {
+				node.parent.centerLeftChild.leftChild.parent = node;
+			}//end leaf case
+			
+		}// rotate left case
+		else if(node == node.parent.centerLeftChild && node.parent.leftChild.isThreeNode()) {
+			
+			// evolve node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value1;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.leftChild.rightChild;
+			
+			// update parent value
+			node.parent.value1 = node.parent.leftChild.value2;
+			
+			// devolve sibling
+			node.parent.leftChild.values = 1;
+			node.parent.leftChild.value2 = 0;
+			node.parent.leftChild.rightChild = node.parent.leftChild.centerChild;
+			node.parent.leftChild.centerChild = null;
+			
+			// non leafcase
+			if(!node.isLeaf) {
+				node.parent.leftChild.rightChild.parent = node;
+			}//end nonleaf case
+		}// rotate mid left case1
+		else if(node == node.parent.centerLeftChild && node.parent.centerRightChild.isThreeNode()) {
+			
+			// evolve node
+			node.values = 2;
+			node.value2 = node.parent.value2;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.centerRightChild.leftChild;
+			
+			// update parent value
+			node.parent.value2 = node.parent.centerRightChild.value1;
+			
+			// devolve sibling
+			node.parent.centerRightChild.values = 1;
+			node.parent.centerRightChild.value1 = node.parent.centerRightChild.value2;
+			node.parent.centerRightChild.value2 = 0;
+			node.parent.centerRightChild.leftChild = node.parent.centerRightChild.centerChild;
+			
+			// nonleaf case
+			if(!node.isLeaf) {
+				node.parent.centerLeftChild.leftChild.parent = null;
+			}//end nonleaf case
+			
+		}// rotate mid left case2
+		else if(node == node.parent.centerRightChild && node.parent.centerLeftChild.isThreeNode()) {
+			
+			// evolve node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value2;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.centerLeftChild.rightChild;
+			
+			// update parent value
+			node.parent.value2 = node.parent.centerLeftChild.value2;
+			
+			// devlove sibling
+			node.parent.centerLeftChild.values = 1;
+			node.parent.centerLeftChild.value2 = 0;
+			node.parent.centerLeftChild.rightChild = node.parent.centerLeftChild.centerChild;
+			node.parent.centerLeftChild.centerChild = null;
+			
+			// non leafcase
+			if(!node.isLeaf) {
+				node.parent.centerLeftChild.rightChild.parent = node;
+			}//end non leaf
+			
+		}// rotate mid right case1
+		else if(node == node.parent.centerRightChild && node.parent.rightChild.isThreeNode()) {
+			
+			// evolve node
+			node.values = 2;
+			node.value2 = node.parent.value3;
+			node.centerChild = node.rightChild;
+			node.rightChild = node.parent.rightChild.leftChild;
+			
+			// update parent value
+			node.parent.value3 = node.parent.rightChild.value1;
+			
+			// devlove sibling
+			node.parent.rightChild.values = 1;
+			node.parent.rightChild.value1 = node.parent.rightChild.value2;
+			node.parent.rightChild.value2 = 0;
+			node.parent.rightChild.leftChild = node.parent.rightChild.centerChild;
+			node.parent.rightChild.centerChild = null;
+			
+			// non leafcase
+			if(!node.isLeaf) {
+				node.parent.rightChild.leftChild.parent = node;
+			}// end nonleaf case
+		}// rotate mid right case2
+		else if(node == node.parent.rightChild) {
+			
+			// evolve node
+			node.values = 2;
+			node.value2 = node.value1;
+			node.value1 = node.parent.value3;
+			node.centerChild = node.leftChild;
+			node.leftChild = node.parent.centerRightChild.rightChild;
+			
+			// update parent value
+			node.parent.value3 = node.parent.centerRightChild.value2;
+			
+			// devlove sibling
+			node.parent.centerRightChild.values = 1;
+			node.parent.centerRightChild.value2 = 0;
+			node.parent.centerRightChild.rightChild = node.parent.centerRightChild.centerChild;
+			node.parent.centerRightChild.centerChild = null;
+			
+			// non leafcase
+			if(!node.isLeaf) {
+				node.parent.centerRightChild.rightChild.parent = node;
+			}//end nonleaf case
+		}//rotate right case
+		
+	}//end rotate4Node3node
+	
+	// this method rotates a value in from a 4node to a 2node with a 4node parent
+		public void rotate4Node4Node(TwoFourTreeItem node) {
+			
+			if(node == node.parent.leftChild) {
+				
+				// evolve node
+				node.values = 2;
+				node.value2 = node.parent.value1;
+				node.centerChild = node.rightChild;
+				node.rightChild = node.parent.centerLeftChild.leftChild;
+				
+				// update parent value
+				node.parent.value1 = node.parent.centerLeftChild.value1;
+				
+				// devlove sibling
+				node.parent.centerLeftChild.values = 2;
+				node.parent.centerChild = node.parent.centerLeftChild.centerRightChild;
+				node.parent.centerLeftChild.leftChild = node.parent.centerLeftChild.centerLeftChild;
+				node.parent.centerLeftChild.centerLeftChild = null;
+				node.parent.centerLeftChild.centerRightChild = null;
+				
+				// non leafcase
+				if(!node.isLeaf) {
+					node.parent.centerLeftChild.leftChild.parent = node;
+				}// nonleaf case
+			}// rotate left case
+			else if(node == node.parent.centerLeftChild && node.parent.leftChild.isFourNode()) {
+				
+				// evolve node
+				node.values = 2;
+				node.value2 = node.value1;
+				node.value1 = node.parent.value1;
+				node.centerChild = node.leftChild;
+				node.leftChild = node.parent.leftChild.rightChild;
+				
+				// update parent value
+				node.parent.value1 = node.parent.leftChild.value3;
+				
+				// devlove sibling
+				node.parent.leftChild.values = 2;
+				node.parent.leftChild.value3 = 0;
+				node.parent.leftChild.centerChild = node.parent.leftChild.centerLeftChild;
+				node.parent.leftChild.rightChild = node.parent.leftChild.centerRightChild;
+				node.parent.leftChild.centerLeftChild = null;
+				node.parent.leftChild.centerRightChild = null;
+				
+				// non leafcase
+				if(!node.isLeaf) {
+					node.parent.leftChild.rightChild.parent = node;
+				}// end nonleaf case
+			}// rotate mid left case1
+			else if(node == node.parent.centerLeftChild && node.parent.centerRightChild.isFourNode()) {
+				
+				// evolve node
+				node.values = 2;
+				node.value2 = node.parent.value2;
+				node.centerChild = node.rightChild;
+				node.rightChild = node.parent.centerRightChild.leftChild;
+				
+				// update parent value
+				
+				
+				// devlove sibling
+							
+				// non leafcase
+				if(!node.isLeaf) {
+					node.parent.centerRightChild.leftChild.parent = node;
+				}// end nonleaf case
+			}// rotate mid left case2
+			else if(node == node.parent.centerRightChild && node.parent.centerLeftChild.isFourNode()) {
+				// evolve node
+				
+				// update parent value
+							
+				// devlove sibling
+							
+				// non leafcase
+				if(!node.isLeaf) {
+					
+				}// end nonleaf case
+			}// rotate mid right case1
+			else if(node == node.parent.centerRightChild && node.parent.rightChild.isFourNode()) {
+				// evolve node
+				
+				// update parent value
+							
+				// devlove sibling
+							
+				// non leafcase
+				if(!node.isLeaf) {
+					
+				}// end nonleaf case
+			}// rotate mid right case2
+			else if(node == node.parent.rightChild) {
+				// evolve node
+				
+				// update parent value
+							
+				// devlove sibling
+							
+				// non leafcase
+				if(!node.isLeaf) {
+					
+				}// end nonleaf case
+			}//rotate right case
+			
+		}//end rotate4Node4node
 	
 	public boolean deleteValue(int value) {
-		
+
 		// check if the value is present
-		if(hasValue(value)) {
-			
+		if (hasValue(value)) {
+
 			// the tree only has one node (root), this can return null if root is a 2node
-			if(root.isLeaf) {
+			if (root.isLeaf) {
 				root = devolveLeafRoot(root, value);
 				return true;
-			}// end leaf root case
-			
-			// we know the value exists and we want to delete it. Currently delNode is referencing the node the value is to be deleted in. 
+			} // end leaf root case
+
+			// the value we want to delete is contained in a 3node or 4node leaf node. We
+			// can simply delete the value and maintain a valid b-tree
+			if (delNode.isLeaf && !delNode.isTwoNode()) {
+				devolveLeafNode(delNode, value);
+			} // end easy leaf case
+
+			// we know the value exists and we want to delete it. Currently delNode is
+			// referencing the node the value is to be deleted in.
 			// we should first ask if we are in the special root merge case.
-			if(root.leftChild.isTwoNode() && root.rightChild.isTwoNode() && root.isTwoNode()) {
+			if (root.leftChild.isTwoNode() && root.rightChild.isTwoNode() && root.isTwoNode()) {
 				root = mergeRoot(root);
-			}// end merge root case
-			
-			//next thing we need to know is if we are in a leaf node case or not. 
-			if(delNode.isLeaf) {
-				
-				// the value we want to delete is at a leaf node, we will create a traversing reference and merge or rotate any 2nodes on the way towards delNode.
-				TwoFourTreeItem cur = root;
-				
-				// First let's check if the root is a 2node, if it is, we should go left or right and start traversing from there
-				// let's also check to to see if the value we want to delete is at the root or not
-				
-				// traversing until we hit delNode
-				while(cur != delNode) {
-					
-					//traverse as normal if we are not at a 2node
-					if(!cur.isTwoNode()) {
-						// 3node case
-						if(cur.isThreeNode()) {
-							if(value < cur.value1) {
-								cur = cur.leftChild;
-							}// go left
-							else if(value < cur.value2){
-								cur = cur.centerChild;
-							}// go mid
-							else {
-								cur = cur.rightChild;
-							}// go right
-						}// end 3node case
-						else if(cur.isFourNode()) {
-							if(value < cur.value1) {
-								cur = cur.leftChild;
-							}// go left
-							else if(value < cur.value2) {
-								cur = cur.centerLeftChild;
-							}// go mid left
-							else if(value < cur.value3) {
-								cur = cur.centerRightChild;
-							}// go mid right
-							else {
-								cur = cur.rightChild;
-							}// go right
-						}// end 4node case
-					}//end !2node case
-					
-					//we've hit a 2node, we must either merge or rotate. 
+
+				// we might have just created a new leaf root
+				if (root.isLeaf) {
+					root = devolveLeafRoot(root, value);
+					return true;
+				} // end newly created root leaf case
+
+			} // end merge root case
+
+			// Let's create a traversing reference and merge or rotate any 2nodes on the way
+			// towards delNode.
+			TwoFourTreeItem cur = root;
+
+			// next thing we need to know is if we are in a 2node leaf case or not.
+			if (delNode.isLeaf) {
+
+				// we know the root is not a leaf node and that the value we want to delete is
+				// at a 2node leaf case
+				// since we dont want to start at the root and prematurely exit our loop, lets
+				// traverse to a child of the root, and start traversing from there.
+
+				if (root.isTwoNode()) {
+					if (value < root.value1) {
+						cur = root.leftChild;
+					} // go left
 					else {
-						
+						cur = root.rightChild;
+					} // go right
+				} // end 2node case
+				else if (root.isThreeNode()) {
+					if (value < root.value1) {
+						cur = root.leftChild;
+					} // go left
+					else if (value < root.value2) {
+						cur = root.centerChild;
+					} // go mid
+					else {
+						cur = root.rightChild;
+					} // go right
+				} // end 3node case
+				else {
+					if (value < root.value1) {
+						cur = root.leftChild;
+					} // go left
+					else if (value < root.value2) {
+						cur = root.centerLeftChild;
+					} // go left mid
+					else if (value < root.value3) {
+						cur = root.centerRightChild;
+					} // go right mid
+					else {
+						cur = root.rightChild;
+					} // go right
+				} // end 4node case
+
+				// traversing until we hit delNode
+				while (cur != delNode) {
+
+					// traverse as normal if we are not at a 2node
+					if (!cur.isTwoNode()) {
+						// 3node case
+						if (cur.isThreeNode()) {
+							if (value < cur.value1) {
+								cur = cur.leftChild;
+							} // go left
+							else if (value < cur.value2) {
+								cur = cur.centerChild;
+							} // go mid
+							else {
+								cur = cur.rightChild;
+							} // go right
+						} // end 3node case
+						else if (cur.isFourNode()) {
+							if (value < cur.value1) {
+								cur = cur.leftChild;
+							} // go left
+							else if (value < cur.value2) {
+								cur = cur.centerLeftChild;
+							} // go mid left
+							else if (value < cur.value3) {
+								cur = cur.centerRightChild;
+							} // go mid right
+							else {
+								cur = cur.rightChild;
+							} // go right
+						} // end 4node case
+					} // end !2node case
+
+					// we've hit a 2node, we must either merge or rotate.
+					else {
+
 					}
-				}//end while ( traversal )
-				
-			}// end leaf case
-			//else we are an internal node
+				} // end while ( traversal )
+
+			} // end leaf case
+				// else we are an internal node
 			else {
-				
-			}
-			
-			
+
+				// First let's check if the root is a 2node, if it is, we should go left or
+				// right and start traversing from there
+				// let's also check to to see if the value we want to delete is at the root or
+				// not
+
+			} // end internal node case
+
 			return true;
-		}
-		
+		} // end if has value
+
 		return false;
 	}
 
